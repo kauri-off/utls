@@ -632,6 +632,18 @@ type KeyShare struct {
 	Data  []byte  `json:"key_exchange,omitempty"` // optional
 }
 
+const (
+	keyShareHybridReuseMarker    byte = 0xf1
+	keyShareClassicalReuseMarker byte = 0xf2
+)
+
+// ReuseHybridAndClassicalKeyShares makes ApplyPreset share one X25519 key between the hybrid and classical entries.
+func ReuseHybridAndClassicalKeyShares(hybrid, classical KeyShare) []KeyShare {
+	hybrid.Data = []byte{keyShareHybridReuseMarker}
+	classical.Data = []byte{keyShareClassicalReuseMarker}
+	return []KeyShare{hybrid, classical}
+}
+
 func (ks KeyShare) ToPrivate() keyShare {
 	return keyShare{group: ks.Group, data: ks.Data}
 }
